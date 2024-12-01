@@ -1,25 +1,41 @@
 import { FC } from 'react';
 import { List, ListItem, ListItemText, IconButton, Typography, Box } from '@mui/material';
+import axios from 'axios';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import { Rule } from "../types/rule.interface.ts";
+
+
+interface Currency {
+    id: string;
+    name: string;
+    symbol: string;
+}
+
+interface Rule {
+    id: string;
+    baseCurrency: Currency;
+    targetCurrency: Currency;
+    percentage: number;
+    isActive: boolean;
+    type: string;
+}
 
 interface RuleListProps {
     rules: Rule[];
     onRulesChange: () => void;
-    setRules: React.Dispatch<React.SetStateAction<Rule[]>>;
 }
 
-const RuleList: FC<RuleListProps> = ({ rules, onRulesChange, setRules }) => {
-    const toggleRuleActive = (rule: Rule) => {
-        setRules(prevRules =>
-            prevRules.map(r =>
-                r.id === rule.id
-                    ? { ...r, isActive: !r.isActive }
-                    : r
-            )
-        );
-        onRulesChange();
+const RuleList: FC<RuleListProps> = ({ rules, onRulesChange }) => {
+
+    const toggleRuleActive = async (rule: Rule) => {
+        try {
+            await axios.patch(`http://localhost:6969/rules/${rule.id}`, {
+                isActive: !rule.isActive,
+            });
+            onRulesChange();
+        } catch (error) {
+            console.error('Error toggling rule status:', error);
+        }
     };
 
     return (
@@ -27,6 +43,7 @@ const RuleList: FC<RuleListProps> = ({ rules, onRulesChange, setRules }) => {
             <Typography variant="h5" gutterBottom>
                 Your Rules
             </Typography>
+
             <List sx={{ mt: 2 }}>
                 {rules.map((rule) => (
                     <ListItem
@@ -42,19 +59,18 @@ const RuleList: FC<RuleListProps> = ({ rules, onRulesChange, setRules }) => {
                     >
                         <ListItemText
                             primary={`${rule.baseCurrency.name} → ${rule.targetCurrency.name}`}
-                            secondary={`Change: ${rule.percentage}% | Status: ${
-                                rule.isActive ? 'Active' : 'Inactive'
-                            }`}
+                            secondary={`Change: ${rule.percentage}% | Status: ${rule.isActive ? 'Active' : 'Inactive'}`}
                         />
                         <IconButton
                             color={rule.isActive ? 'success' : 'warning'}
                             onClick={() => toggleRuleActive(rule)}
                         >
-                            {rule.isActive ? <ToggleOnIcon /> : <ToggleOffIcon />}
+                            {rule.isActive ? <ToggleOffIcon /> : <ToggleOnIcon />}
                         </IconButton>
                     </ListItem>
                 ))}
             </List>
+
         </Box>
     );
 };

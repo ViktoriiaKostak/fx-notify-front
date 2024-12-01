@@ -1,28 +1,36 @@
-import { FC, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
-import { Rule } from "../types/rule.interface.ts";
+import { FC, useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface RuleFormProps {
   onRuleAdded: () => void;
   email: string;
-  currencies: string[];
-  setRules: React.Dispatch<React.SetStateAction<Rule[]>>;
 }
 
-const RuleForm: FC<RuleFormProps> = ({
-                                       onRuleAdded,
-                                       email,
-                                       currencies,
-                                       setRules
-                                     }) => {
+const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
   const [formData, setFormData] = useState({
     email,
-    baseCurrency: "",
-    targetCurrency: "",
-    type: "INCREASE",
+    baseCurrency: '',
+    targetCurrency: '',
+    type: 'INCREASE', // Значення за замовчуванням
     percentage: 0,
     isActive: true,
   });
+
+  const [currencies, setCurrencies] = useState<string[]>([]);
+
+  // Отримання списку валют з бекенду
+  useEffect(() => {
+    const fetchCurrencies = async () => {
+      try {
+        const response = await axios.get('http://localhost:6969/currencies');
+        setCurrencies(response.data);
+      } catch (error) {
+        console.error('Error fetching currencies:', error);
+      }
+    };
+
+    fetchCurrencies();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -42,43 +50,30 @@ const RuleForm: FC<RuleFormProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const newRule: Rule = {
-      id: uuidv4(),
-      baseCurrency: {
-        id: formData.baseCurrency,
-        name: formData.baseCurrency,
-        symbol: formData.baseCurrency
-      },
-      targetCurrency: {
-        id: formData.targetCurrency,
-        name: formData.targetCurrency,
-        symbol: formData.targetCurrency
-      },
-      percentage: parseFloat(formData.percentage.toString()),
-      isActive: formData.isActive,
-      type: formData.type
-    };
-
-    setRules(prevRules => [...prevRules, newRule]);
-
-    // Reset form
-    setFormData((prev) => ({
-      ...prev,
-      baseCurrency: "",
-      targetCurrency: "",
-      percentage: 0,
-    }));
-
-    onRuleAdded();
+    try {
+      const dataToSend = {
+        ...formData,
+        percentage: parseFloat(formData.percentage.toString()),
+      };
+      await axios.post('http://localhost:6969/rules', dataToSend);
+      setFormData({
+        ...formData,
+        baseCurrency: '',
+        targetCurrency: '',
+        percentage: 0,
+      });
+      onRuleAdded(); // Виклик для оновлення списку
+    } catch (error) {
+      console.error('Error creating rule:', error);
+    }
   };
+
 
   return (
       <form onSubmit={handleSubmit}>
         <h2>Create Rule</h2>
-
         <label>
           Base Currency:
           <select
@@ -97,7 +92,6 @@ const RuleForm: FC<RuleFormProps> = ({
             ))}
           </select>
         </label>
-
         <label>
           Target Currency:
           <select
@@ -116,7 +110,6 @@ const RuleForm: FC<RuleFormProps> = ({
             ))}
           </select>
         </label>
-
         <label>
           Rule Type:
           <select
@@ -129,7 +122,6 @@ const RuleForm: FC<RuleFormProps> = ({
             <option value="DECREASE">DECREASE</option>
           </select>
         </label>
-
         <label>
           Percentage:
           <input
@@ -140,7 +132,6 @@ const RuleForm: FC<RuleFormProps> = ({
               required
           />
         </label>
-
         <label>
           Active:
           <input
@@ -150,7 +141,6 @@ const RuleForm: FC<RuleFormProps> = ({
               onChange={handleChange}
           />
         </label>
-
         <button type="submit">Add Rule</button>
       </form>
   );

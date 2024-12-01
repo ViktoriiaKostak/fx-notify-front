@@ -1,49 +1,57 @@
-import {FC, useState} from 'react';
-import { Typography, Box } from '@mui/material';
+import { FC } from 'react';
+import { Typography, Box, CircularProgress, Alert } from '@mui/material';
+import { useQuery } from 'react-query';
 import RuleList from '../components/RuleList';
 import RuleForm from '../components/RuleForm';
-import { Rule } from "../types/rule.interface.ts";
 
-const MOCK_CURRENCIES = ['USD', 'EUR', 'BTC', 'ETH', 'JPY', 'GBP'];
-
-const MOCK_RULES: Rule[] = [
-    {
-        id: '1',
-        baseCurrency: { id: 'USD', name: 'US Dollar', symbol: '$' },
-        targetCurrency: { id: 'EUR', name: 'Euro', symbol: '€' },
-        percentage: 5,
-        isActive: true,
-        type: 'INCREASE'
-    },
-    {
-        id: '2',
-        baseCurrency: { id: 'BTC', name: 'Bitcoin', symbol: '₿' },
-        targetCurrency: { id: 'USD', name: 'US Dollar', symbol: '$' },
-        percentage: 3,
-        isActive: false,
-        type: 'DECREASE'
-    }
-];
-
-interface WebAppUser {
+interface Currency {
     id: string;
-    first_name?: string;
-    last_name?: string;
-    username?: string;
-    language_code?: string;
+    name: string;
+    symbol: string;
 }
 
-interface RulesPageProps {
-    telegramUser: WebAppUser;
+interface Rule {
+    id: string;
+    baseCurrency: Currency;
+    targetCurrency: Currency;
+    percentage: number;
+    isActive: boolean;
+    type: string;
+    email: string;
 }
 
-const RulesPage: FC<RulesPageProps> = ({ telegramUser }) => {
-    const [rules, setRules] = useState(MOCK_RULES);
+const fetchRules = async (email: string): Promise<Rule[]> => {
+    const response = await fetch(`http://localhost:6969/rules?email=${email}`);
+    if (!response.ok) throw new Error('Failed to fetch rules');
+    return response.json();
+};
 
-    const refetch = () => {
-        // In a mock scenario, this would just reset to initial mock data
-        setRules(MOCK_RULES);
-    };
+const RulesPage: FC = () => {
+    const email = localStorage.getItem('userEmail');
+
+    const {
+        data: rules = [],
+        isLoading,
+        error,
+        refetch
+    } = useQuery<Rule[], Error>(
+        ['rules', email],
+        () => fetchRules(email as string),
+        {
+            enabled: !!email,
+            placeholderData: []
+        }
+    );
+
+    if (!email) {
+        return (
+            <Box sx={{ mt: 4, px: 2, textAlign: 'center' }}>
+                <Typography variant="h6" color="error">
+                    Please login first to manage your rules.
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box
@@ -51,7 +59,7 @@ const RulesPage: FC<RulesPageProps> = ({ telegramUser }) => {
                 mt: 4,
                 px: 2,
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: '500px',
                 mx: 'auto',
                 textAlign: 'center',
                 display: 'flex',
@@ -63,17 +71,23 @@ const RulesPage: FC<RulesPageProps> = ({ telegramUser }) => {
                 Manage Your Rules
             </Typography>
 
-            <RuleList
-                rules={rules}
-                onRulesChange={() => refetch()}
-                setRules={setRules}
-            />
-            <RuleForm
-                onRuleAdded={refetch}
-                email={telegramUser.username || ''}
-                currencies={MOCK_CURRENCIES}
-                setRules={setRules}
-            />
+            {isLoading && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <CircularProgress />
+                </Box>
+            )}
+            {error && (
+                <Alert severity="error">
+                    {error instanceof Error ? error.message : 'An unknown error occurred'}
+                </Alert>
+            )}
+
+            {!isLoading && !error && (
+                <>
+                    <RuleList rules={rules} onRulesChange={refetch} />
+                    <RuleForm onRuleAdded={refetch} email={email} />
+                </>
+            )}
         </Box>
     );
 };
