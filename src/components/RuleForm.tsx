@@ -1,12 +1,20 @@
-import { FC, useState, useEffect } from "react";
-import axios from "axios";
+import { FC, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import { Rule } from "../types/rule.interface.ts";
 
 interface RuleFormProps {
   onRuleAdded: () => void;
   email: string;
+  currencies: string[];
+  setRules: React.Dispatch<React.SetStateAction<Rule[]>>;
 }
 
-const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
+const RuleForm: FC<RuleFormProps> = ({
+                                       onRuleAdded,
+                                       email,
+                                       currencies,
+                                       setRules
+                                     }) => {
   const [formData, setFormData] = useState({
     email,
     baseCurrency: "",
@@ -15,22 +23,6 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
     percentage: 0,
     isActive: true,
   });
-
-  const [currencies, setCurrencies] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchCurrencies = async () => {
-      try {
-        const response = await axios.get("http://localhost:6969/currencies");
-        setCurrencies(response.data);
-      } catch (error) {
-        console.error("Error fetching currencies:", error);
-      }
-    };
-
-    fetchCurrencies();
-  }, []);
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -50,23 +42,37 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      await axios.post("http://localhost:6969/rules", {
-        ...formData,
-        percentage: parseFloat(formData.percentage.toString()),
-      });
-      setFormData((prev) => ({
-        ...prev,
-        baseCurrency: "",
-        targetCurrency: "",
-        percentage: 0,
-      }));
-      onRuleAdded();
-    } catch (error) {
-      console.error("Error creating rule:", error);
-    }
+
+    const newRule: Rule = {
+      id: uuidv4(),
+      baseCurrency: {
+        id: formData.baseCurrency,
+        name: formData.baseCurrency,
+        symbol: formData.baseCurrency
+      },
+      targetCurrency: {
+        id: formData.targetCurrency,
+        name: formData.targetCurrency,
+        symbol: formData.targetCurrency
+      },
+      percentage: parseFloat(formData.percentage.toString()),
+      isActive: formData.isActive,
+      type: formData.type
+    };
+
+    setRules(prevRules => [...prevRules, newRule]);
+
+    // Reset form
+    setFormData((prev) => ({
+      ...prev,
+      baseCurrency: "",
+      targetCurrency: "",
+      percentage: 0,
+    }));
+
+    onRuleAdded();
   };
 
   return (

@@ -1,9 +1,29 @@
-import { FC } from 'react';
-import { Typography, Box, CircularProgress, Alert } from '@mui/material';
-import { useQuery } from 'react-query';
+import {FC, useState} from 'react';
+import { Typography, Box } from '@mui/material';
 import RuleList from '../components/RuleList';
 import RuleForm from '../components/RuleForm';
-import {Rule} from "../types/rule.interface.ts";
+import { Rule } from "../types/rule.interface.ts";
+
+const MOCK_CURRENCIES = ['USD', 'EUR', 'BTC', 'ETH', 'JPY', 'GBP'];
+
+const MOCK_RULES: Rule[] = [
+    {
+        id: '1',
+        baseCurrency: { id: 'USD', name: 'US Dollar', symbol: '$' },
+        targetCurrency: { id: 'EUR', name: 'Euro', symbol: '€' },
+        percentage: 5,
+        isActive: true,
+        type: 'INCREASE'
+    },
+    {
+        id: '2',
+        baseCurrency: { id: 'BTC', name: 'Bitcoin', symbol: '₿' },
+        targetCurrency: { id: 'USD', name: 'US Dollar', symbol: '$' },
+        percentage: 3,
+        isActive: false,
+        type: 'DECREASE'
+    }
+];
 
 interface WebAppUser {
     id: string;
@@ -17,27 +37,13 @@ interface RulesPageProps {
     telegramUser: WebAppUser;
 }
 
-const fetchRules = async (userId: string): Promise<Rule[]> => {
-    const response = await fetch(`http://localhost:6969/rules?userId=${userId}`);
-    if (!response.ok) throw new Error('Failed to fetch rules');
-    return response.json();
-};
-
 const RulesPage: FC<RulesPageProps> = ({ telegramUser }) => {
-    const { id: telegramId } = telegramUser;
+    const [rules, setRules] = useState(MOCK_RULES);
 
-    const {
-        data: rules = [],
-        isLoading,
-        error,
-        refetch,
-    } = useQuery<Rule[], Error>(
-        ['rules', telegramId],
-        () => fetchRules(telegramId),
-        {
-            enabled: !!telegramId,
-        }
-    );
+    const refetch = () => {
+        // In a mock scenario, this would just reset to initial mock data
+        setRules(MOCK_RULES);
+    };
 
     return (
         <Box
@@ -57,23 +63,17 @@ const RulesPage: FC<RulesPageProps> = ({ telegramUser }) => {
                 Manage Your Rules
             </Typography>
 
-            {isLoading && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <CircularProgress />
-                </Box>
-            )}
-            {error && (
-                <Alert severity="error">
-                    {error.message || 'An unknown error occurred'}
-                </Alert>
-            )}
-
-            {!isLoading && !error && (
-                <>
-                    <RuleList rules={rules} onRulesChange={refetch} />
-                    <RuleForm onRuleAdded={refetch} email={telegramUser.username || ''} />
-                </>
-            )}
+            <RuleList
+                rules={rules}
+                onRulesChange={() => refetch()}
+                setRules={setRules}
+            />
+            <RuleForm
+                onRuleAdded={refetch}
+                email={telegramUser.username || ''}
+                currencies={MOCK_CURRENCIES}
+                setRules={setRules}
+            />
         </Box>
     );
 };
