@@ -16,9 +16,12 @@ type Props = {
 
 const TelegramProvider = ({ children }: Props) => {
     useEffect(() => {
+        console.log("Initializing Telegram SDK...");
+
         init();
 
         if (backButton.isSupported()) {
+            console.log("Mounting back button...");
             backButton.mount();
         }
         miniApp.mount();
@@ -26,8 +29,9 @@ const TelegramProvider = ({ children }: Props) => {
         initData.restore();
         viewport
             .mount()
-            .catch(console.error)
+            .catch((error) => console.error("Viewport mount error:", error))
             .then(() => {
+                console.log("Binding CSS variables for viewport...");
                 viewport.bindCssVars();
             });
 
@@ -44,6 +48,7 @@ const TelegramProvider = ({ children }: Props) => {
             themeParams.bindCssVars();
         }
     }, []);
+
 
     return children;
 };

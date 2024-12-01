@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import TelegramProvider from "./providers /telegram-provider.tsx";
+import WebApp from "@twa-dev/sdk";
 
+const App: React.FC = () => {
+    useEffect(() => {
+        WebApp.ready();
+    }, []);
 
-const App: React.FC = () => (
-    <TelegramProvider>
+    return (
         <Router>
             <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<HomePage/>}/>
             </Routes>
         </Router>
-    </TelegramProvider>
-);
+    );
+};
 
 export default App;

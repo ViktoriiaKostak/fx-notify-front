@@ -1,29 +1,5 @@
-declare namespace Telegram {
-    interface InitData {
-        query_id: string;
-        user: {
-            id: number;
-            first_name: string;
-            last_name?: string;
-            username?: string;
-            language_code?: string;
-            photo_url?: string;
-        };
-        auth_date: number;
-        hash: string;
-    }
+import WebApp from '@twa-dev/sdk';
 
-    interface WebApp {
-        initData: string;
-        initDataUnsafe: InitData;
-        ready: () => void;
-        close: () => void;
-        sendData: (data: string) => void;
-    }
-}
-
-interface Window {
-    Telegram: {
-        WebApp: Telegram.WebApp;
-    };
-}
+// Use the types from the SDK
+export type TelegramInitData = typeof WebApp.initDataUnsafe;
+export type TelegramUser = typeof WebApp.initDataUnsafe.user;
