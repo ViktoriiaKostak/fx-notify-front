@@ -1,10 +1,11 @@
-import { FC, useState, useEffect } from 'react';
-import axios from 'axios';
+import { FC, useState } from 'react';
 
 interface RuleFormProps {
   onRuleAdded: () => void;
   email: string;
 }
+
+const mockCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'HKD', 'SGD'];
 
 const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
   const [formData, setFormData] = useState({
@@ -16,20 +17,7 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
     isActive: true,
   });
 
-  const [currencies, setCurrencies] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchCurrencies = async () => {
-      try {
-        const response = await axios.get('http://localhost:6969/currencies');
-        setCurrencies(response.data);
-      } catch (error) {
-        console.error('Error fetching currencies:', error);
-      }
-    };
-
-    fetchCurrencies();
-  }, []);
+  const currencies = mockCurrencies;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -51,24 +39,15 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const dataToSend = {
-        ...formData,
-        percentage: parseFloat(formData.percentage.toString()),
-      };
-      await axios.post('http://localhost:6969/rules', dataToSend);
-      setFormData({
-        ...formData,
-        baseCurrency: '',
-        targetCurrency: '',
-        percentage: 0,
-      });
-      onRuleAdded(); 
-    } catch (error) {
-      console.error('Error creating rule:', error);
-    }
+    console.log('Rule added:', formData);
+    setFormData({
+      ...formData,
+      baseCurrency: '',
+      targetCurrency: '',
+      percentage: 0,
+    });
+    onRuleAdded();
   };
-
 
   return (
       <form onSubmit={handleSubmit}>
