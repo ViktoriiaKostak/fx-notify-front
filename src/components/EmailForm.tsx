@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
-import { Box, TextField, Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {FC, useState} from 'react';
+import {Box, TextField, Button, Typography} from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 
 const EmailForm: FC = () => {
     const [email, setEmail] = useState('');
@@ -18,9 +18,9 @@ const EmailForm: FC = () => {
         <Box
             component="form"
             onSubmit={handleSubmit}
+            className="email-form-box"
             sx={{
                 textAlign: 'center',
-                mt: 4,
                 padding: '16px',
                 maxWidth: '500px',
                 mx: 'auto',
@@ -29,7 +29,7 @@ const EmailForm: FC = () => {
                 boxShadow: 2,
             }}
         >
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
                 Enter Your Email
             </Typography>
             <TextField
@@ -48,7 +48,7 @@ const EmailForm: FC = () => {
                 sx={{
                     mt: 2,
                     bgcolor: 'primary.main',
-                    '&:hover': { bgcolor: 'primary.dark' },
+                    '&:hover': {bgcolor: 'primary.dark'},
                 }}
             >
                 Start

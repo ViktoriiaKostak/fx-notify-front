@@ -9,7 +9,7 @@
 }
 
 body {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Apple SD Gothic Neo', "Roboto", sans-serif;
     margin: 0;
     padding: 0;
     background: linear-gradient(to bottom right, var(--background-light), #ffffff);
@@ -25,11 +25,12 @@ body {
     width: 100%;
     max-width: 900px;
     margin: 2rem auto;
-    padding: 2rem;
+    padding: 1.5rem;
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 10px 25px var(--box-shadow-light);
     transition: box-shadow 0.3s ease;
+    box-sizing: border-box;
 }
 
 .app-container:hover {
@@ -40,11 +41,11 @@ body {
 h1, h2 {
     text-align: center;
     color: var(--primary-color);
+    margin: 1rem 0;
 }
 
 /* Buttons */
 button {
-    width: 100%;
     max-width: 200px;
     margin: 1rem auto;
     display: block;
@@ -79,6 +80,7 @@ input, select {
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 input:focus, select:focus {
@@ -92,29 +94,43 @@ label {
     font-weight: bold;
     margin-bottom: 0.5rem;
     color: var(--text-dark);
+    display: block;
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
     .app-container {
-        padding: 1.5rem;
+        padding: 1rem;
+    }
+
+    h1, h2 {
+        font-size: 1.4rem;
     }
 
     button {
         font-size: 1rem;
     }
-
-    h1, h2 {
-        font-size: 1.5rem;
-    }
 }
 
 @media (max-width: 480px) {
+    .app-container {
+        padding: 0.8rem;
+        border-radius: 12px;
+    }
+
     h1, h2 {
         font-size: 1.2rem;
+        margin: 0.8rem 0;
     }
 
     button {
         font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+    }
+
+    input, select {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
 }

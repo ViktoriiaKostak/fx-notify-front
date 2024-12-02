@@ -67,7 +67,7 @@ const RulesPage: FC = () => {
                 gap: 2,
             }}
         >
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
                 Manage Your Rules
             </Typography>
 

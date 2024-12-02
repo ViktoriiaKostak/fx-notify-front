@@ -40,7 +40,7 @@ const RuleList: FC<RuleListProps> = ({ rules, onRulesChange }) => {
 
     return (
         <Box>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
                 Your Rules
             </Typography>
 
