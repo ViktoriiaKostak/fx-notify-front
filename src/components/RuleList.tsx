@@ -1,4 +1,5 @@
-import { FC, useState } from 'react';
+// @ts-ignore
+import React, { FC, useState } from 'react';
 
 interface Currency {
     id: string;
