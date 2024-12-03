@@ -1,4 +1,5 @@
-import {FC} from 'react';
+// @ts-ignore
+import React, {FC} from 'react';
 import {Typography, Box, CircularProgress, Alert} from '@mui/material';
 import {useQuery} from 'react-query';
 import RuleList from '../components/RuleList';
