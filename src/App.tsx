@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { CssBaseline, Container, Typography } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {CssBaseline, Container, Typography} from '@mui/material';
+import {BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import axios from 'axios';
 import RulesPage from './pages/RulesPage';
@@ -17,13 +17,17 @@ const App = () => {
     useEffect(() => {
         WebApp.ready();
 
+        if (!initDataRaw) {
+            return;
+        }
+
         const initDataUnsafe = WebApp.initDataUnsafe;
         const initData = WebApp.initData; // Отримує підписані дані
         setInitDataRaw(initData);
 
         if (initDataUnsafe?.user) {
             axios
-                .post(`${API_BASE}/auth/telegram`, { initDataRaw: initData })
+                .post(`${API_BASE}/auth/telegram`, {initDataRaw: initData})
                 .then(() => navigate('/rules'))
                 .catch(error => {
                     console.error('Authorization failed:', error);
@@ -36,7 +40,7 @@ const App = () => {
 
     return (
         <Router>
-            <CssBaseline />
+            <CssBaseline/>
             <Container
                 maxWidth="xs"
                 sx={{
@@ -50,14 +54,14 @@ const App = () => {
                     variant="h5"
                     gutterBottom
                     textAlign="center"
-                    sx={{ color: '#34495e' }}
+                    sx={{color: '#34495e'}}
                 >
                     Telegram Mini App
                 </Typography>
                 <Routes>
-                    <Route path="/" element={<LoadingPage />} />
-                    <Route path="/login" element={<EmailForm />} />
-                    <Route path="/rules" element={<RulesPage />} />
+                    <Route path="/" element={<LoadingPage/>}/>
+                    <Route path="/login" element={<EmailForm/>}/>
+                    <Route path="/rules" element={<RulesPage/>}/>
                 </Routes>
             </Container>
         </Router>
