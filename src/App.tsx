@@ -1,29 +1,66 @@
-import { FC } from 'react';
+import { useEffect, useState } from 'react';
 import { CssBaseline, Container, Typography } from '@mui/material';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import WebApp from '@twa-dev/sdk';
+import axios from 'axios';
 import RulesPage from './pages/RulesPage';
 import EmailForm from './components/EmailForm';
+import LoadingPage from './pages/LoadingPage';
 import './App.css';
 
-const queryClient = new QueryClient();
+const API_BASE = 'https://fx-back-7e5e55f131eb.herokuapp.com';
 
-const App: FC = () => {
+const App = () => {
+    const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        WebApp.ready();
+
+        const initDataUnsafe = WebApp.initDataUnsafe;
+        const initData = WebApp.initData; // Отримує підписані дані
+        setInitDataRaw(initData);
+
+        if (initDataUnsafe?.user) {
+            axios
+                .post(`${API_BASE}/auth/telegram`, { initDataRaw: initData })
+                .then(() => navigate('/rules'))
+                .catch(error => {
+                    console.error('Authorization failed:', error);
+                    navigate('/login');
+                });
+        } else {
+            navigate('/login');
+        }
+    }, [navigate]);
+
     return (
-        <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-                <CssBaseline />
-                <Container maxWidth="xs" sx={{ padding: '16px', backgroundColor: 'white', borderRadius: '8px', boxShadow: 3}}>
-                    <Typography variant="h4" gutterBottom textAlign="center" sx={{ color: '#34495e' }}>
-                        Currency Rule Management
-                    </Typography>
-                    <Routes>
-                        <Route path="/" element={<EmailForm />} />
-                        <Route path="/rules" element={<RulesPage />} />
-                    </Routes>
-                </Container>
-            </BrowserRouter>
-        </QueryClientProvider>
+        <Router>
+            <CssBaseline />
+            <Container
+                maxWidth="xs"
+                sx={{
+                    padding: '16px',
+                    backgroundColor: 'white',
+                    borderRadius: '16px',
+                    boxShadow: 3,
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    gutterBottom
+                    textAlign="center"
+                    sx={{ color: '#34495e' }}
+                >
+                    Telegram Mini App
+                </Typography>
+                <Routes>
+                    <Route path="/" element={<LoadingPage />} />
+                    <Route path="/login" element={<EmailForm />} />
+                    <Route path="/rules" element={<RulesPage />} />
+                </Routes>
+            </Container>
+        </Router>
     );
 };
 

@@ -1,6 +1,6 @@
-import {FC, useState} from 'react';
-import {Box, TextField, Button, Typography} from '@mui/material';
-import {useNavigate} from 'react-router-dom';
+import {Box, Button, TextField, Typography} from "@mui/material";
+import {FC, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const EmailForm: FC = () => {
     const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ const EmailForm: FC = () => {
                 boxShadow: 2,
             }}
         >
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
                 Enter Your Email
             </Typography>
             <TextField

@@ -1,6 +1,8 @@
-import { FC, useState, useEffect } from 'react';
-import RuleList from "../components/RuleList.tsx";
-import RuleForm from "../components/RuleForm.tsx";
+import {FC} from 'react';
+import {Typography, Box, CircularProgress, Alert} from '@mui/material';
+import {useQuery} from 'react-query';
+import RuleList from '../components/RuleList';
+import RuleForm from '../components/RuleForm';
 
 interface Currency {
     id: string;
@@ -18,86 +20,75 @@ interface Rule {
     email: string;
 }
 
-const mockCurrencies = {
-    'USD': { id: '1', name: 'US Dollar', symbol: '$' },
-    'EUR': { id: '2', name: 'Euro', symbol: '€' },
-    'GBP': { id: '3', name: 'British Pound', symbol: '£' },
-    'JPY': { id: '4', name: 'Japanese Yen', symbol: '¥' },
+const fetchRules = async (email: string): Promise<Rule[]> => {
+    const response = await fetch(`https://fx-back-7e5e55f131eb.herokuapp.com/rules?email=${email}`);
+    if (!response.ok) throw new Error('Failed to fetch rules');
+    return response.json();
 };
 
-const mockRules: Rule[] = [
-    {
-        id: '1',
-        baseCurrency: mockCurrencies['USD'],
-        targetCurrency: mockCurrencies['EUR'],
-        percentage: 5,
-        isActive: true,
-        type: 'INCREASE',
-        email: 'user@example.com'
-    },
-    {
-        id: '2',
-        baseCurrency: mockCurrencies['GBP'],
-        targetCurrency: mockCurrencies['JPY'],
-        percentage: 3,
-        isActive: false,
-        type: 'DECREASE',
-        email: 'user@example.com'
-    }
-];
-
 const RulesPage: FC = () => {
-    const [email] = useState(localStorage.getItem('userEmail'));
-    const [rules, setRules] = useState<Rule[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const email = localStorage.getItem('userEmail');
 
-    useEffect(() => {
-        const loadRules = () => {
-            setTimeout(() => {
-                setRules(mockRules.filter(rule => rule.email === email));
-                setIsLoading(false);
-            }, 500);
-        };
-
-        if (email) {
-            loadRules();
-        } else {
-            setIsLoading(false);
+    const {
+        data: rules = [],
+        isLoading,
+        error,
+        refetch
+    } = useQuery<Rule[], Error>(
+        ['rules', email],
+        () => fetchRules(email as string),
+        {
+            enabled: !!email,
+            placeholderData: []
         }
-    }, [email]);
-
-    const handleRulesChange = () => {
-        console.log('Rules updated');
-    };
+    );
 
     if (!email) {
         return (
-            <div>
-                <h2>Please login first to manage your rules.</h2>
-            </div>
+            <Box sx={{mt: 4, px: 2, textAlign: 'center'}}>
+                <Typography variant="h6" color="error">
+                    Please login first to manage your rules.
+                </Typography>
+            </Box>
         );
     }
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
     return (
-        <div>
-            <h1>Manage Your Rules</h1>
-            {rules.length === 0 ? (
-                <p>No rules found. Create your first rule!</p>
-            ) : (
-                <RuleList
-                    rules={rules}
-                    onRulesChange={handleRulesChange}
-                />
+        <Box
+            sx={{
+                mt: 4,
+                px: 2,
+                width: '100%',
+                maxWidth: '500px',
+                mx: 'auto',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+            }}
+        >
+            <Typography variant="h5" gutterBottom>
+                Manage Your Rules
+            </Typography>
+
+            {isLoading && (
+                <Box sx={{display: 'flex', justifyContent: 'center', mt: 2}}>
+                    <CircularProgress/>
+                </Box>
             )}
-            <RuleForm
-                onRuleAdded={handleRulesChange}
-                email={email}
-            />
-        </div>
+            {error && (
+                <Alert severity="error">
+                    {error instanceof Error ? error.message : 'An unknown error occurred'}
+                </Alert>
+            )}
+
+            {!isLoading && !error && (
+                <>
+                    <RuleList rules={rules} onRulesChange={refetch}/>
+                    <RuleForm onRuleAdded={refetch} email={email}/>
+                </>
+            )}
+        </Box>
     );
 };
 
