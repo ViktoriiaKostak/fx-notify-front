@@ -1,6 +1,5 @@
 // @ts-ignore
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { CssBaseline, Container, Typography } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';

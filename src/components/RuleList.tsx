@@ -1,82 +1,63 @@
-// @ts-ignore
-import React, { FC, useState } from 'react';
+import {FC} from 'react';
+import {List, ListItem, ListItemText, IconButton, Typography, Box} from '@mui/material';
+import axios from 'axios';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import {Rule} from "../types/rule.interface.ts";
 
-interface Currency {
-    id: string;
-    name: string;
-    symbol: string;
-}
-
-interface Rule {
-    id: string;
-    baseCurrency: Currency;
-    targetCurrency: Currency;
-    percentage: number;
-    isActive: boolean;
-    type: string;
-}
 
 interface RuleListProps {
     rules: Rule[];
     onRulesChange: () => void;
 }
 
-const mockCurrencies = {
-    'USD': { id: '1', name: 'US Dollar', symbol: '$' },
-    'EUR': { id: '2', name: 'Euro', symbol: '€' },
-    'GBP': { id: '3', name: 'British Pound', symbol: '£' },
-    'JPY': { id: '4', name: 'Japanese Yen', symbol: '¥' },
-};
+const RuleList: FC<RuleListProps> = ({rules, onRulesChange}) => {
 
-const mockRules: Rule[] = [
-    {
-        id: '1',
-        baseCurrency: mockCurrencies['USD'],
-        targetCurrency: mockCurrencies['EUR'],
-        percentage: 5,
-        isActive: true,
-        type: 'INCREASE'
-    },
-    {
-        id: '2',
-        baseCurrency: mockCurrencies['GBP'],
-        targetCurrency: mockCurrencies['JPY'],
-        percentage: 3,
-        isActive: false,
-        type: 'DECREASE'
-    }
-];
-
-const RuleList: FC<RuleListProps> = ({ onRulesChange }) => {
-    const [rules, setRules] = useState<Rule[]>(mockRules);
-
-    const toggleRuleActive = (ruleId: string) => {
-        const updatedRules = rules.map(rule =>
-            rule.id === ruleId
-                ? { ...rule, isActive: !rule.isActive }
-                : rule
-        );
-
-        setRules(updatedRules);
-        onRulesChange();
+    const toggleRuleActive = async (rule: Rule) => {
+        try {
+            await axios.patch(`https://fx-back-7e5e55f131eb.herokuapp.com/rules/${rule.id}`, {
+                isActive: !rule.isActive,
+            });
+            onRulesChange();
+        } catch (error) {
+            console.error('Error toggling rule status:', error);
+        }
     };
 
     return (
-        <div>
-            <h2>Your Rules</h2>
-            {rules.map((rule) => (
-                <div key={rule.id}>
-                    <p>
-                        {rule.baseCurrency.name} → {rule.targetCurrency.name}
-                        Change: {rule.percentage}% |
-                        Status: {rule.isActive ? 'Active' : 'Inactive'}
-                        <button onClick={() => toggleRuleActive(rule.id)}>
-                            Toggle
-                        </button>
-                    </p>
-                </div>
-            ))}
-        </div>
+        <Box>
+            <Typography variant="h6" gutterBottom>
+                Your Rules
+            </Typography>
+
+            <List sx={{mt: 2}}>
+                {rules.map((rule) => (
+                    <ListItem
+                        key={rule.id}
+                        sx={{
+                            mb: 2,
+                            px: 2,
+                            py: 1,
+                            borderRadius: '8px',
+                            bgcolor: '#f4f6f8',
+                            boxShadow: 1,
+                        }}
+                    >
+                        <ListItemText
+                            primary={`${rule.baseCurrency.name} → ${rule.targetCurrency.name}`}
+                            secondary={`Change: ${rule.percentage}% | Status: ${rule.isActive ? 'Active' : 'Inactive'}`}
+                        />
+                        <IconButton
+                            color={rule.isActive ? 'success' : 'warning'}
+                            onClick={() => toggleRuleActive(rule)}
+                        >
+                            {rule.isActive ? <ToggleOffIcon/> : <ToggleOnIcon/>}
+                        </IconButton>
+                    </ListItem>
+                ))}
+            </List>
+
+        </Box>
     );
 };
 

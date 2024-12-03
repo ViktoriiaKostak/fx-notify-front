@@ -3,22 +3,7 @@ import {Typography, Box, CircularProgress, Alert} from '@mui/material';
 import {useQuery} from 'react-query';
 import RuleList from '../components/RuleList';
 import RuleForm from '../components/RuleForm';
-
-interface Currency {
-    id: string;
-    name: string;
-    symbol: string;
-}
-
-interface Rule {
-    id: string;
-    baseCurrency: Currency;
-    targetCurrency: Currency;
-    percentage: number;
-    isActive: boolean;
-    type: string;
-    email: string;
-}
+import {Rule} from "../types/rule.interface.ts";
 
 const fetchRules = async (email: string): Promise<Rule[]> => {
     const response = await fetch(`https://fx-back-7e5e55f131eb.herokuapp.com/rules?email=${email}`);
