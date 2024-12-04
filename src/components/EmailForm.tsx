@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import WebApp from '@twa-dev/sdk';
-import { z } from 'zod';
+import React, {useState, useEffect} from 'react';
+import {z} from 'zod';
 
 const EmailSchema = z.object({
     email: z.string().email('Not a valid email address'),
@@ -8,48 +7,16 @@ const EmailSchema = z.object({
 
 const EmailForm: React.FC = () => {
     const [email, setEmail] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [telegramId, setTelegramId] = useState<number | null>(null);
+    const [telegramId] = useState<number | null>(null);
 
     useEffect(() => {
         const checkAndInitializeUser = async () => {
             const storedEmail = localStorage.getItem('userEmail');
-
-            const initDataUnsafe = WebApp.initDataUnsafe;
-            const telegramUserId = initDataUnsafe?.user?.id;
-
             if (storedEmail) {
                 window.location.href = '/rules';
                 return;
-            }
-
-            if (telegramUserId) {
-                setTelegramId(telegramUserId);
-
-                try {
-                    const response = await fetch('https://fx-back-7e5e55f131eb.herokuapp.com/users/check-email', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ telegramId: telegramUserId })
-                    });
-
-                    const result = await response.json();
-
-                    if (result.user.email) {
-                        localStorage.setItem('userEmail', result.email);
-                        window.location.href = '/rules';
-                    } else {
-                        setLoading(false);
-                    }
-                } catch (err) {
-                    console.error('Error when check email:', err);
-                    setLoading(false);
-                }
-            } else {
-                setLoading(false);
             }
         };
 
@@ -58,9 +25,8 @@ const EmailForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         try {
-            const validatedData = EmailSchema.parse({ email });
+            const validatedData = EmailSchema.parse({email});
 
             if (telegramId) {
                 const response = await fetch('https://fx-back-7e5e55f131eb.herokuapp.com/users/add-email', {
