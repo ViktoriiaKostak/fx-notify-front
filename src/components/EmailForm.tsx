@@ -46,6 +46,13 @@ const UpdateEmail: React.FC = () => {
         }
     };
 
+    const handleClearEmail = () => {
+        localStorage.removeItem('userEmail');
+        setEmail('');
+        setSuccess('Email cleared successfully!');
+        setError('');
+    };
+
     const handleGoToRules = () => {
         navigate('/rules');
     };
@@ -82,6 +89,13 @@ const UpdateEmail: React.FC = () => {
                 disabled={!email}
             >
                 Update Email
+            </Button>
+            <Button
+                variant="outlined"
+                color="warning"
+                onClick={handleClearEmail}
+            >
+                Clear Email
             </Button>
             {success && <Alert severity="success">{success}</Alert>}
             {error && <Alert severity="error">{error}</Alert>}
