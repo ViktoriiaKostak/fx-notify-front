@@ -1,76 +1,171 @@
-@import url('https://fonts.googleapis.com/css2?family=Apple+SD+Gothic+Neo:wght@400;700&display=swap');
-
 :root {
-  font-family: 'Apple SD Gothic Neo', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
   --primary-color: #6c5ce7;
   --secondary-color: #74b9ff;
+  --text-dark: #2c3e50;
+  --text-light: #ffffff;
   --background-light: #f0f3f7;
   --background-dark: #242424;
-  --text-light: #ffffff;
-  --text-dark: #2c3e50;
+  --box-shadow-light: rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: rgba(0, 0, 0, 0.15);
   --font-size-base: 16px;
+  --scrollbar-bg: #e0e0e0;
+  --scrollbar-thumb: var(--primary-color);
 
+  font-family: 'Apple SD Gothic Neo', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   color-scheme: light dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Apple SD Gothic Neo', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--background-dark);
-  color: var(--text-light);
+  background: linear-gradient(to bottom right, var(--background-light), #ffffff);
+  color: var(--text-dark);
+  font-family: var(--font-size-base);
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 1rem;
+  overflow-x: hidden;
   transition: background-color 0.3s, color 0.3s;
 }
 
-h1, h2, h3, h4, h5, h6 {
+.app-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--background-light);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px var(--box-shadow-light);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: box-shadow 0.3s ease;
+}
+
+.app-container:hover {
+  box-shadow: 0 15px 35px var(--box-shadow-hover);
+}
+
+h1, h2 {
+  text-align: center;
+  color: var(--primary-color);
   margin: 0.5rem 0;
-  font-weight: 600;
+}
+
+.scrollable {
+  overflow-y: auto;
+  max-height: 60vh;
+  padding-right: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
+}
+
+.scrollable::-webkit-scrollbar {
+  width: 8px;
+  background: var(--scrollbar-bg);
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
 }
 
 button {
-  border-radius: 8px;
-  padding: 0.6em 1.2em;
+  padding: 0.8em 1.5em;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: bold;
   color: var(--text-light);
-  background-color: var(--primary-color);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   border: none;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px var(--box-shadow-light);
   cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
+  align-self: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
+
 button:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-2px);
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px var(--box-shadow-hover);
 }
-button:focus {
-  outline: 4px solid var(--secondary-color);
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: none;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+  display: block;
 }
 
 a {
   color: var(--secondary-color);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
 }
+
 a:hover {
   color: var(--primary-color);
 }
 
-@media (prefers-color-scheme: light) {
-  body {
-    background-color: var(--background-light);
-    color: var(--text-dark);
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  h1, h2 {
+    font-size: 1.4rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0.8rem;
+    border-radius: 12px;
+  }
+
+  h1, h2 {
+    font-size: 1.2rem;
+    margin: 0.8rem 0;
+  }
+
+  button {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+  }
+
+  input, select {
+    font-size: 0.85rem;
+    padding: 0.6rem;
   }
 }

@@ -8,6 +8,7 @@ import RulesPage from './pages/RulesPage';
 import EmailForm from './components/EmailForm';
 import LoadingPage from './pages/LoadingPage';
 import './App.css';
+import UpdateEmail from "./components/UpdateEmail.tsx";
 
 const API_BASE = 'https://fx-back-7e5e55f131eb.herokuapp.com';
 
@@ -63,6 +64,7 @@ const AppContent = () => {
                 <Route path="/" element={<LoadingPage/>}/>
                 <Route path="/login" element={<EmailForm/>}/>
                 <Route path="/rules" element={<RulesPage/>}/>
+                <Route path="/update-email" element={<UpdateEmail/>}/>
             </Routes>
         </Container>
     );
