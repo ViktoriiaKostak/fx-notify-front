@@ -25,7 +25,7 @@ const AppContent = () => {
         if (initDataUnsafe?.user) {
             axios
                 .post(`${API_BASE}/auth/telegram`, { initDataRaw: initData })
-                .then(() => navigate('/rules'))
+                .then(() => navigate('/login'))
                 .catch(error => {
                     console.error('Authorization failed:', error);
                     navigate('/login');

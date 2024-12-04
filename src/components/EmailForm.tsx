@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import {z} from 'zod';
+import React, { useState, useEffect } from 'react';
+import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 
 const EmailSchema = z.object({
     email: z.string().email('Not a valid email address'),
@@ -10,6 +11,7 @@ const EmailForm: React.FC = () => {
     const [loading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [telegramId] = useState<number | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const checkAndInitializeUser = async () => {
@@ -26,7 +28,7 @@ const EmailForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const validatedData = EmailSchema.parse({email});
+            const validatedData = EmailSchema.parse({ email });
 
             if (telegramId) {
                 const response = await fetch('https://fx-back-7e5e55f131eb.herokuapp.com/users/add-email', {
@@ -61,6 +63,13 @@ const EmailForm: React.FC = () => {
 
             console.error(err);
         }
+    };
+
+    const handleGoToRules = () => {
+        if (navigator.vibrate) {
+            navigator.vibrate(200);
+        }
+        navigate('/rules');
     };
 
     if (loading) {
@@ -108,6 +117,16 @@ const EmailForm: React.FC = () => {
                             Continue
                         </button>
                     </form>
+
+                    <button
+                        onClick={handleGoToRules}
+                        className="
+              w-full bg-green-600 text-white py-3 rounded-lg mt-4
+              hover:bg-green-700 transition duration-300
+            "
+                    >
+                        Go to Rules
+                    </button>
                 </div>
             </div>
         </div>
