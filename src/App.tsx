@@ -31,7 +31,12 @@ const AppContent = () => {
                     if (!localStorage.getItem('userEmail')) {
                         navigate('/email');
                     } else {
-                        navigate('/rules');
+                        const currentPath = window.location.pathname;
+                        const excludedRoutes = ['/update-email'];
+
+                        if (!excludedRoutes.includes(currentPath)) {
+                            navigate('/rules');
+                        }
                     }
                 }).catch(error => {
                 console.error('Authorization failed:', error);
