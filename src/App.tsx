@@ -23,6 +23,9 @@ const AppContent = () => {
         const initData = WebApp.initData;
 
         if (initDataUnsafe?.user) {
+            const telegramId = initDataUnsafe.user.id;
+
+            localStorage.setItem('telegramId', telegramId.toString());
             axios
                 .post(`${API_BASE}/auth/telegram`, { initDataRaw: initData })
                 .then(() => navigate('/login'))
