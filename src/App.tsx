@@ -13,8 +13,6 @@ const API_BASE = 'https://fx-back-7e5e55f131eb.herokuapp.com';
 
 const AppContent = () => {
     const navigate = useNavigate();
-    localStorage.removeItem('userEmail');
-
 
     useEffect(() => {
         WebApp.ready();
