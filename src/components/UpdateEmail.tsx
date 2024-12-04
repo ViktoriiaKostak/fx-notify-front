@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const UpdateEmail: React.FC = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleKeyboardShow = () => setIsKeyboardOpen(true);
+        const handleKeyboardHide = () => setIsKeyboardOpen(false);
+
+        window.addEventListener('keyboardDidShow', handleKeyboardShow);
+        window.addEventListener('keyboardDidHide', handleKeyboardHide);
+
+        return () => {
+            window.removeEventListener('keyboardDidShow', handleKeyboardShow);
+            window.removeEventListener('keyboardDidHide', handleKeyboardHide);
+        };
+    }, []);
 
     const handleEmailUpdate = async () => {
         try {
@@ -20,12 +36,18 @@ const UpdateEmail: React.FC = () => {
             });
 
             if (!response.ok) throw new Error('Failed to update email');
+
+            localStorage.setItem('userEmail', email);
             setSuccess('Email updated successfully!');
             setError('');
         } catch (e) {
             setError((e as Error).message);
             setSuccess('');
         }
+    };
+
+    const handleGoToRules = () => {
+        navigate('/rules');
     };
 
     return (
@@ -39,6 +61,7 @@ const UpdateEmail: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,
+                pb: isKeyboardOpen ? 10 : 2, // Add padding when keyboard is open
             }}
         >
             <Typography variant="h6" gutterBottom>
@@ -61,6 +84,13 @@ const UpdateEmail: React.FC = () => {
             </Button>
             {success && <Alert severity="success">{success}</Alert>}
             {error && <Alert severity="error">{error}</Alert>}
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleGoToRules}
+            >
+                Go to Rules
+            </Button>
         </Box>
     );
 };
