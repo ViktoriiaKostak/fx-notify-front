@@ -1,7 +1,7 @@
 // @ts-ignore
-import React, { useEffect } from 'react';
-import { CssBaseline, Container, Typography } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {CssBaseline, Container, Typography} from '@mui/material';
+import {BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import axios from 'axios';
 import RulesPage from './pages/RulesPage';
@@ -25,12 +25,17 @@ const AppContent = () => {
 
             localStorage.setItem('telegramId', telegramId.toString());
             axios
-                .post(`${API_BASE}/auth/telegram`, { initDataRaw: initData })
-                .then(() => navigate('/login'))
-                .catch(error => {
-                    console.error('Authorization failed:', error);
-                    navigate('/login');
-                });
+                .post(`${API_BASE}/auth/telegram`, {initDataRaw: initData})
+                .then(() => {
+                    if (!localStorage.getItem('userEmail')) {
+                        navigate('/email');
+                    } else {
+                        navigate('/rules');
+                    }
+                }).catch(error => {
+                console.error('Authorization failed:', error);
+                navigate('/login');
+            });
         } else {
             navigate('/login');
         }
@@ -50,14 +55,14 @@ const AppContent = () => {
                 variant="h5"
                 gutterBottom
                 textAlign="center"
-                sx={{ color: '#34495e' }}
+                sx={{color: '#34495e'}}
             >
                 Telegram Mini App
             </Typography>
             <Routes>
-                <Route path="/" element={<LoadingPage />} />
-                <Route path="/login" element={<EmailForm />} />
-                <Route path="/rules" element={<RulesPage />} />
+                <Route path="/" element={<LoadingPage/>}/>
+                <Route path="/login" element={<EmailForm/>}/>
+                <Route path="/rules" element={<RulesPage/>}/>
             </Routes>
         </Container>
     );
@@ -66,8 +71,8 @@ const AppContent = () => {
 const App = () => {
     return (
         <Router>
-            <CssBaseline />
-            <AppContent />
+            <CssBaseline/>
+            <AppContent/>
         </Router>
     );
 };
