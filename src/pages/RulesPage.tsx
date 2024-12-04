@@ -65,7 +65,7 @@ const RulesPage: FC = () => {
             <Button
                 variant="outlined"
                 color="primary"
-                onClick={() => navigate('/update-email')}
+                onClick={() => navigate('/login')}
                 sx={{ alignSelf: 'flex-end' }}
             >
                 Change Email

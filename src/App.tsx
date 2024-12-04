@@ -32,7 +32,7 @@ const AppContent = () => {
                         navigate('/login');
                     } else {
                         const currentPath = window.location.pathname;
-                        const excludedRoutes = ['/update-email'];
+                        const excludedRoutes = ['/login'];
 
                         if (!excludedRoutes.includes(currentPath)) {
                             navigate('/rules');
