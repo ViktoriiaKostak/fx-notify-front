@@ -29,7 +29,7 @@ const AppContent = () => {
                 .post(`${API_BASE}/auth/telegram`, {initDataRaw: initData})
                 .then(() => {
                     if (!localStorage.getItem('userEmail')) {
-                        navigate('/email');
+                        navigate('/login');
                     } else {
                         const currentPath = window.location.pathname;
                         const excludedRoutes = ['/update-email'];
